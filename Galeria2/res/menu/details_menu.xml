@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:title="Rate image"
+            android:id="@+id/rating_item">
+    </item>
+    <item
+            android:title="Show location"
+            android:id="@+id/locating_item">
+    </item>
+</menu>
