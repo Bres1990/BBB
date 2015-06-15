@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.polites.android.GestureImageView;
 
+import javax.script.ScriptException;
 import java.util.Date;
 
 
@@ -71,7 +72,7 @@ public class imageDisplay extends Activity implements ActionBar.OnNavigationList
         String uriString = imageURI.toString();
 
         myDatabaseAdapter.open();
-        currentImage = myDatabaseAdapter.getImageByAddress(uriString);
+        //currentImage = myDatabaseAdapter.getImageByAddress(uriString);
 
         view.setLayoutParams(params);
 
@@ -150,7 +151,12 @@ public class imageDisplay extends Activity implements ActionBar.OnNavigationList
                     public void onClick(View v) {
                         userRankValue = ratingBar.getRating();
                         currentImage.setRating(userRankValue);
-                        myDatabaseAdapter.updateImage(currentImage);
+                        try {
+                            myDatabaseAdapter.execUpdateImage(DatabaseAdapter.javaScriptCode, currentImage.getName(), currentImage.getAddress(), currentImage.getRating(), currentImage.getLatitude(), currentImage.getLongitude());
+                        } catch (ScriptException e) {
+                            e.printStackTrace();
+                        }
+                        //myDatabaseAdapter.updateImage(currentImage);
                         ratingDialog.dismiss();
                     }
                 });

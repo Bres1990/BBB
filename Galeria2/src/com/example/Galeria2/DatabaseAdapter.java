@@ -7,11 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.sql.SQLException;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * Created by Adam on 2015-05-26.
@@ -46,6 +44,8 @@ public class DatabaseAdapter {
     public static final int LATITUDE_COLUMN = 3;
     public static final int LONGITUDE_COLUMN = 4;
 
+    private static Object[] params;
+
     private static final String DB_CREATE_IMAGE_TABLE =
             "CREATE TABLE " + DB_IMAGE_TABLE + "("
                     + KEY_NAME + " " + NAME_OPTIONS + ", "
@@ -55,6 +55,78 @@ public class DatabaseAdapter {
                     + KEY_LONGITUDE + " " + LONGITUDE_OPTIONS + ");";
     private static final String DROP_IMAGE_TABLE =
             "DROP TABLE IF EXISTS" + DB_IMAGE_TABLE;
+
+    public static final String javaScriptCode = "var sqlite3 = require('sqlite3').verbose();\n" +
+            "var db = new sqlite3.Database('data/imagedb');\n" +
+            "\n" +
+            "function insertImage(name, address, latitude, longitude)\n" +
+            "{\n" +
+            "\n" +
+            "    db.serialize(function() {\n" +
+            "        db.run(\"CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)\");\n" +
+            "\n" +
+            "        db.run(\"INSERT INTO image (Name, Address, Rating, Latitude, Longitude VALUES (?)\", name, address, 0.0, latitude, longitude);\n" +
+            "    });\n" +
+            "\n" +
+            "    db.close();\n" +
+            "}\n" +
+            "\n" +
+            "function updateImage(name, address, rating, latitude, longitude)\n" +
+            "{\n" +
+            "    db.serialize(function() {\n" +
+            "        db.run(\"CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)\");\n" +
+            "\n" +
+            "        db.run(\"UPDATE image SET Address = \", address, \", Rating = \", rating, \", Latitude = \", latitude, \", Longitude = \", longitude, \"WHERE Name = \", name);\n" +
+            "    });\n" +
+            "\n" +
+            "    db.close();\n" +
+            "}\n" +
+            "\n" +
+            "function deleteImage(name)\n" +
+            "{\n" +
+            "    db.serialize(function() {\n" +
+            "        db.run(\"CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)\");\n" +
+            "\n" +
+            "        db.run(\"DELETE FROM image WHERE Name = \", name);\n" +
+            "        console.log(\"Image \", name, \" deleted!\");\n" +
+            "    });\n" +
+            "\n" +
+            "    db.close();\n" +
+            "}\n" +
+            "\n" +
+            "function getAllImages()\n" +
+            "{\n" +
+            "    db.serialize(function() {\n" +
+            "        db.run(\"CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)\");\n" +
+            "\n" +
+            "        db.run(\"SELECT * FROM image\");\n" +
+            "\n" +
+            "    });\n" +
+            "\n" +
+            "    db.close();\n" +
+            "}\n" +
+            "\n" +
+            "function getImageByName(name)\n" +
+            "{\n" +
+            "    db.serialize(function() {\n" +
+            "        db.run(\"CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)\");\n" +
+            "\n" +
+            "        db.run(\"SELECT * FROM image WHERE name = \", name);\n" +
+            "        // TODO wyswietlanie krotki\n" +
+            "    })\n" +
+            "    db.close();\n" +
+            "}\n" +
+            "\n" +
+            "function getImageByAddress(address)\n" +
+            "{\n" +
+            "    db.serialize(function() {\n" +
+            "        db.run(\"CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)\");\n" +
+            "\n" +
+            "        db.run(\"SELECT * FROM image WHERE address = \", address);\n" +
+            "        // TODO wyswietlanie krotki\n" +
+            "    })\n" +
+            "    db.close();\n" +
+            "}";
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
         /**
@@ -161,6 +233,7 @@ public class DatabaseAdapter {
     }
 
     public void updateImage(String name, String address, Float rating, Double latitude, Double longitude) {
+
         //String where = KEY_NAME + " = " + name;
         //ContentValues updateImageValues = new ContentValues();
         //updateImageValues.put(KEY_NAME, name);
@@ -174,14 +247,17 @@ public class DatabaseAdapter {
     }
 
     public void deleteImage(String name) {
-        //String where = KEY_NAME + " = " + name;
 
+        //execJSfunction(deleteImage, );
+
+        //String where = KEY_NAME + " = " + name;
         //return db.delete(DB_IMAGE_TABLE, where, null) > 0;
     }
 
     public void getAllImages() {
-        //String[] columns = {KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
+        //execJSfunction(getAllImages, params);
 
+        //String[] columns = {KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
         //return db.query(DB_IMAGE_TABLE, columns, null, null, null, null, null);
     }
 
@@ -216,20 +292,84 @@ public class DatabaseAdapter {
 
         return task;*/
     }
+    /*
+    public static void execJSfunction(String JSfunctionToExecute) throws ScriptException {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine =
+                engineManager.getEngineByName("nashorn");
+        engine.eval(JSfunctionToExecute);
+        //engine.eval()
+    }*/
 
-    public static String execJSfunction(Object functionName) throws ScriptException, FileNotFoundException, NoSuchMethodException
-    {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("JavaScript");
-
-        File functionscript = new File("public/lib/marked.js");
-        Reader reader = new FileReader(functionscript);
-        engine.eval(reader);
-
-        Invocable invocableEngine = (Invocable) engine;
-        Object marked = engine.get("marked");
-        Object lexer = invocableEngine.invokeMethod(marked, "lexer", "**hello**");
-        Object result = invocableEngine.invokeMethod(marked, "parser", lexer);
-        return result.toString();
+    public static void execGetImageByAddress(String JSfunction, String address) throws ScriptException {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine =
+                engineManager.getEngineByName("nashorn");
+        engine.eval(JSfunction);
+        engine.eval("getImageByAddress("+address+");");
     }
+
+    public static void execGetImageByName(String JSfunction, String name) throws ScriptException {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine =
+                engineManager.getEngineByName("nashorn");
+        engine.eval(JSfunction);
+        engine.eval("getImageByName("+name+");");
+    }
+
+    public static void execDeleteImage(String JSfunction, String name) throws ScriptException {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine =
+                engineManager.getEngineByName("nashorn");
+        engine.eval(JSfunction);
+        engine.eval("deleteImage("+name+");");
+    }
+
+    public static void execUpdateImage(String JSfunction, String name, String address, Float rating, Double latitude, Double longitude) throws ScriptException {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine =
+                engineManager.getEngineByName("nashorn");
+        engine.eval(JSfunction);
+        engine.eval("updateImage("+name+", "+address+", "+rating+", "+latitude+", "+longitude+");");
+    }
+
+    public static void execInsertImage(String JSfunction, String name, String address) throws ScriptException {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine =
+                engineManager.getEngineByName("nashorn");
+        engine.eval(JSfunction);
+        engine.eval("insertImage("+name+", "+address+", 0.0);");
+    }
+
+    /*
+    public static void execJSfunction(String JSfunctionToExecute, Object[] params)
+    {
+        // Every Rhino VM begins with the enter()
+        // This Context is not Android's Context
+        org.mozilla.javascript.Context rhino = org.mozilla.javascript.Context.enter();
+
+        // Turn off optimization to make Rhino Android compatible
+        rhino.setOptimizationLevel(-1);
+        try {
+            Scriptable scope = rhino.initStandardObjects();
+
+            // Note the forth argument is 1, which means the JavaScript source has
+            // been compressed to only one line using something like YUI
+            rhino.evaluateString(scope, javaScriptCode, "JavaScript", 1, null);
+
+            // Get the functionName defined in JavaScriptCode
+            Object obj = scope.get(JSfunctionToExecute, scope);
+
+            if (obj instanceof Function) {
+                Function jsFunction = (Function) obj;
+
+                // Call the function with params
+                Object jsResult = jsFunction.call(rhino, scope, scope, params);
+                // Parse the jsResult object to a String
+                String result = org.mozilla.javascript.Context.toString(jsResult);
+            }
+        } finally {
+            org.mozilla.javascript.Context.exit();
+        }
+    }*/
 }

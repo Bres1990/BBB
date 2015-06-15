@@ -1,22 +1,13 @@
-/**
- * Created by Adam on 2015-06-12.
- */
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('data/imagedb');
 
-var name, address, latitude, longitude, rating;
-
-function insertImage(name, address, latitude, longitude)
+function insertImage(name, address)
 {
-    this.name = name;
-    this.address = address;
-    this.latitude = latitude;
-    this.longitude = longitude;
 
     db.serialize(function() {
         db.run("CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)");
 
-        db.run("INSERT INTO image (Name, Address, Rating, Latitude, Longitude VALUES (?)", name, address, 0.0, latitude, longitude);
+        db.run("INSERT INTO image (Name, Address, Rating, Latitude, Longitude VALUES (?)", name, address, 0.0);
     });
 
     db.close();
@@ -24,12 +15,6 @@ function insertImage(name, address, latitude, longitude)
 
 function updateImage(name, address, rating, latitude, longitude)
 {
-    this.name = name;
-    this.address = address;
-    this.rating = rating;
-    this.latitude = latitude;
-    this.longitude = longitude;
-
     db.serialize(function() {
         db.run("CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)");
 
@@ -41,8 +26,6 @@ function updateImage(name, address, rating, latitude, longitude)
 
 function deleteImage(name)
 {
-    this.name = name;
-
     db.serialize(function() {
         db.run("CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)");
 
@@ -67,24 +50,23 @@ function getAllImages()
 
 function getImageByName(name)
 {
-    this.name = name;
     db.serialize(function() {
         db.run("CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)");
 
         db.run("SELECT * FROM image WHERE name = ", name);
-        // TODO wyswietlanie krotki
+
     })
     db.close();
 }
 
-function getImageByName(address)
+function getImageByAddress(address)
 {
-    this.address = address;
     db.serialize(function() {
         db.run("CREATE TABLE IF NOT EXISTS image (Name TEXT NOT NULL, Address TEXT NOT NULL, Rating FLOAT DEFAULT 0.0, Latitude DOUBLE, Longitude DOUBLE)");
 
         db.run("SELECT * FROM image WHERE address = ", address);
-        // TODO wyswietlanie krotki
+
     })
     db.close();
 }
+

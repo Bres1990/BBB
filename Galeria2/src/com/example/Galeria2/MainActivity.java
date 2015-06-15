@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
+import javax.script.ScriptException;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -263,7 +264,12 @@ public class MainActivity extends Activity {
             files = targetDirector.listFiles();
             for (File file : files){
                 myImageAdapter.add(file.getAbsolutePath());
-                myDatabaseAdapter.insertImage(file.getName(), file.getAbsolutePath(), null, null);
+                //myDatabaseAdapter.insertImage(file.getName(), file.getAbsolutePath(), null, null);
+                try {
+                    myDatabaseAdapter.execInsertImage(DatabaseAdapter.javaScriptCode, file.getName(), file.getAbsolutePath());
+                } catch (ScriptException e) {
+                    e.printStackTrace();
+                }
             }
         }
         catch (NullPointerException e) {

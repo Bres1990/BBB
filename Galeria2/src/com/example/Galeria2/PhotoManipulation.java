@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 import com.example.Galeria2.DatabaseAdapter;
+
+import javax.script.ScriptException;
 
 /**
  * Created by Asia on 14.05.2015.
@@ -65,7 +68,12 @@ public class PhotoManipulation extends Activity{
         Button delete = (Button) findViewById(R.id.delete);
 
         myDatabaseAdapter.open();
-        currentImage = myDatabaseAdapter.getImageByAddress(URI);//z jakiegos powodu zwraca nulla
+        //currentImage = myDatabaseAdapter.getImageByAddress(URI);//z jakiegos powodu zwraca nulla
+        /*try {
+            currentImage = myDatabaseAdapter.execGetImageByAddress(DatabaseAdapter.javaScriptCode, URI);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }*/
     }
 
 
@@ -77,7 +85,12 @@ public class PhotoManipulation extends Activity{
             currentImage.setLongitude(imagePosition.longitude);
             Toast.makeText(getApplicationContext(), imagePosition.toString(), Toast.LENGTH_LONG).show();
         }
-        myDatabaseAdapter.updateImage(currentImage);
+        //myDatabaseAdapter.updateImage(currentImage);
+        try {
+            myDatabaseAdapter.execUpdateImage(DatabaseAdapter.javaScriptCode, currentImage.getName(), currentImage.getAddress(), currentImage.getRating(), currentImage.getLatitude(), currentImage.getLongitude());
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
 
         finish();
 
