@@ -31,4 +31,8 @@ import android.view.ViewGroup;
     public void passBackButton(){
         drawingView.backButtonPressed();
     }
+
+    public DrawingView getDrawingView() {
+        return drawingView;
+    }
 }

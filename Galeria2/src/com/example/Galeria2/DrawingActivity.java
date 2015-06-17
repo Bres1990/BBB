@@ -48,12 +48,6 @@ public class DrawingActivity extends FragmentActivity implements ActionBar.OnNav
         drawing = (DrawingFragment) manager.findFragmentById(R.id.drawingFragment);
     }
 
-    @Override
-    public void onBackPressed() {
-        drawing.passBackButton();
-
-    }
-
     /**
      * This method is called whenever a navigation item in your action bar
      * is selected.
@@ -80,11 +74,18 @@ public class DrawingActivity extends FragmentActivity implements ActionBar.OnNav
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
+            case R.id.undo: {
+                drawing.passBackButton();
+                return true;
+            }
             //jeśli ktoś wybrał toolbara to urucham
             case R.id.toolbar: {
 
                 Intent intent=new Intent(DrawingActivity.this, ToolbarActivity.class);
-                DrawingActivity.this.startActivity(intent);
+                intent.putExtra("color", drawing.getDrawingView().getMyPaint().getColor());
+                intent.putExtra("size", drawing.getDrawingView().getMyPaint().getStrokeWidth());
+
+                DrawingActivity.this.startActivityForResult(intent, 2222);
 
                 return true;}
             //jesli chce zapisać, pokaż okienko z doborem nazwy

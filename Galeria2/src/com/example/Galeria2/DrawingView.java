@@ -215,4 +215,7 @@ public class DrawingView extends View {
         }
     }
 
+    public Paint getMyPaint() {
+        return myPaint;
+    }
 }

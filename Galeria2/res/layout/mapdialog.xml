@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
     <FrameLayout
             android:layout_width="fill_parent"
@@ -19,6 +18,5 @@
             android:text="Return"
             android:id="@+id/mapButton"
             android:layout_below="@+id/frameLayout"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_horizontal"/>
-</LinearLayout>
+            android:layout_centerHorizontal="true"/>
+</RelativeLayout>

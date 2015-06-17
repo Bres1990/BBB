@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <view android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          class="com.example.Galeria2.ColorPickerView" android:id="@+id/view2"
+          android:layout_marginBottom="104dp" android:layout_alignParentBottom="true"
+          android:layout_centerHorizontal="true"/>
+    <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sizeBar"
+            android:layout_alignTop="@+id/size" android:layout_toRightOf="@+id/space2"
+            android:layout_alignParentRight="true" android:max="30" android:indeterminate="false"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Size"
+            android:id="@+id/textView"
+            android:layout_marginTop="82dp"
+            android:layout_marginLeft="36dp" android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="10"
+            android:id="@+id/size"
+            android:layout_alignTop="@+id/space" android:layout_toRightOf="@+id/space"/>
+    <Space
+            android:layout_width="20px"
+            android:layout_height="20px"
+            android:layout_alignTop="@+id/textView" android:layout_toRightOf="@+id/textView" android:id="@+id/space"/>
+    <Space
+            android:layout_width="20px"
+            android:layout_height="20px"
+            android:layout_below="@+id/space" android:layout_alignLeft="@+id/view2" android:id="@+id/space2"/>
+</RelativeLayout>

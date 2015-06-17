@@ -77,8 +77,8 @@ public class logoAnimation extends Activity {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(logoAnimation.this, StartScreen.class);
-                logoAnimation.this.startActivity(intent);
+                Intent intent = new Intent(logoAnimation.this, StartScreen.class);logoAnimation.this.startActivity(intent);
+
             }
         }, 5000);
 
