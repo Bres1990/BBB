@@ -30,6 +30,7 @@ public class StartScreen extends Activity implements SharedPreferences.OnSharedP
 
     private static final int CAMERA_REQUEST = 2345;
     public SharedPreferences prefs;
+    public static String name;
     private String outputURI;
     DatabaseAdapter myDatabaseAdapter = new DatabaseAdapter(this);
 
@@ -157,14 +158,14 @@ public class StartScreen extends Activity implements SharedPreferences.OnSharedP
             /* done */
             outputURI = "QR_" + timeStamp + ".jpg";
 
-            String name = outputURI;
+            name = outputURI;
 
             File image = new File(imagesFolder, outputURI);
             Uri uriSavedImage = Uri.fromFile(image);
 
             outputURI= "/DCIM/Test/"+outputURI;
 
-            myDatabaseAdapter.insertImage(name, outputURI, null, null);
+            myDatabaseAdapter.insertImage(name, outputURI);
 
             imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
             startActivityForResult(imageIntent, CAMERA_REQUEST);

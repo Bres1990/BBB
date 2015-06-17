@@ -21,111 +21,66 @@ public class DatabaseAdapter {
     private Context context;
     private DatabaseHelper dbHelper;
 
-    private static final String DEBUG_TAG = "ImageManager";
+    public static final String DEBUG_TAG = "ImageManager";
 
-    private static final int DB_VERSION = 1;
-    private static final String DB_NAME = "database.db";
-    private static final String DB_IMAGE_TABLE = "image";
+    public static int DB_VERSION = 1;
+    public static final String DB_NAME = "images.db";
+    public static final String DB_IMAGE_TABLE = "images";
 
     // nazwa | adres | rating | latitude | longitude //
+    public static final String KEY_ID = "Id";
     public static final String KEY_NAME = "Name";
     public static final String KEY_ADDRESS = "Address";
     public static final String KEY_RATING = "Rating";
     public static final String KEY_LATITUDE = "Latitude";
     public static final String KEY_LONGITUDE = "Longitude";
 
+    public static final String ID_OPTIONS = "INTEGER PRIMARY KEY AUTOINCREMENT";
     public static final String NAME_OPTIONS = "TEXT NOT NULL";
     public static final String ADDRESS_OPTIONS = "TEXT NOT NULL";
-    public static final String RATING_OPTIONS = "FLOAT DEFAULT 0.0";
-    public static final String LATITUDE_OPTIONS = "DOUBLE";
-    public static final String LONGITUDE_OPTIONS = "DOUBLE";
+    public static final String RATING_OPTIONS = "REAL DEFAULT 0.0";
+    public static final String LATITUDE_OPTIONS = "REAL DEFAULT 0.00";
+    public static final String LONGITUDE_OPTIONS = "REAL DEFAULT 0.00";
 
-    public static final int NAME_COLUMN = 0;
-    public static final int ADDRESS_COLUMN = 1;
-    public static final int RATING_COLUMN = 2;
-    public static final int LATITUDE_COLUMN = 3;
-    public static final int LONGITUDE_COLUMN = 4;
+    public static final int ID_COLUMN = 0;
+    public static final int NAME_COLUMN = 1;
+    public static final int ADDRESS_COLUMN = 2;
+    public static final int RATING_COLUMN = 3;
+    public static final int LATITUDE_COLUMN = 4;
+    public static final int LONGITUDE_COLUMN = 5;
 
-    private static final String DB_CREATE_IMAGE_TABLE =
-            "CREATE TABLE " + DB_IMAGE_TABLE + "("
+    public static final String[] columns = {KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
+
+    public static final String DB_CREATE_IMAGE_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + DB_IMAGE_TABLE + "("
+                    + KEY_ID + " " + ID_OPTIONS + ", "
                     + KEY_NAME + " " + NAME_OPTIONS + ", "
                     + KEY_ADDRESS + " " + ADDRESS_OPTIONS + ", "
                     + KEY_RATING + " " + RATING_OPTIONS + ", "
                     + KEY_LATITUDE + " " + LATITUDE_OPTIONS + ", "
                     + KEY_LONGITUDE + " " + LONGITUDE_OPTIONS + ");";
-    private static final String DROP_IMAGE_TABLE =
-            "DROP TABLE IF EXISTS" + DB_IMAGE_TABLE;
-
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-        /**
-         * Create a helper object to create, open, and/or manage a database.
-         * This method always returns very quickly.  The database is not actually
-         * created or opened until one of {@link #getWritableDatabase} or
-         * {@link #getReadableDatabase} is called.
-         *
-         * @param context to use to open or create the database
-         * @param name    of the database file, or null for an in-memory database
-         * @param factory to use for creating cursor objects, or null for the default
-         * @param version number of the database (starting at 1); if the database is older,
-         *                {@link #onUpgrade} will be used to upgrade the database; if the database is
-         *                newer, {@link #onDowngrade} will be used to downgrade the database
-         */
-        public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-            super(context, name, factory, version);
-        }
-
-        /**
-         * Called when the database is created for the first time. This is where the
-         * creation of tables and the initial population of the tables should happen.
-         *
-         * @param db The database.
-         */
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(DB_CREATE_IMAGE_TABLE);
-
-            Log.d(DEBUG_TAG, "Database creating...");
-            Log.d(DEBUG_TAG, "Table " + DB_IMAGE_TABLE + " ver. " + DB_VERSION + " created.");
-        }
-
-        /**
-         * Called when the database needs to be upgraded. The implementation
-         * should use this method to drop tables, add tables, or do anything else it
-         * needs to upgrade to the new schema version.
-         * <p/>
-         * <p>
-         * The SQLite ALTER TABLE documentation can be found
-         * <a href="http://sqlite.org/lang_altertable.html">here</a>. If you add new columns
-         * you can use ALTER TABLE to insert them into a live table. If you rename or remove columns
-         * you can use ALTER TABLE to rename the old table, then create the new table and then
-         * populate the new table with the contents of the old table.
-         * </p><p>
-         * This method executes within a transaction.  If an exception is thrown, all changes
-         * will automatically be rolled back.
-         * </p>
-         *
-         * @param db         The database.
-         * @param oldVersion The old database version.
-         * @param newVersion The new database version.
-         */
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL(DROP_IMAGE_TABLE);
-
-            Log.d(DEBUG_TAG, "Database updating...");
-            Log.d(DEBUG_TAG, "Table" + DB_IMAGE_TABLE + " updated from ver. " + oldVersion + " to ver. " + newVersion);
-            Log.d(DEBUG_TAG, "Old data is lost.");
-
-            onCreate(db);
-        }
-    }
+    public static final String DROP_IMAGE_TABLE =
+            "DROP TABLE IF EXISTS " + DB_IMAGE_TABLE;
 
     public DatabaseAdapter(Context context) {
         this.context = context;
     }
 
+    public static void onCreate(SQLiteDatabase database) {
+        database.execSQL(DB_CREATE_IMAGE_TABLE);
+    }
+
+    public static void onUpgrade(SQLiteDatabase database, int oldVersion,
+                                 int newVersion) {
+        Log.w(DatabaseAdapter.class.getName(), "Upgrading database from version "
+                + oldVersion + " to " + newVersion
+                + ", which will destroy all old data");
+        database.execSQL("DROP TABLE IF EXISTS " + DB_IMAGE_TABLE);
+        onCreate(database);
+    }
+
     public DatabaseAdapter open() {
-        dbHelper = new DatabaseHelper(context, DB_NAME, null, DB_VERSION);
+        dbHelper = new DatabaseHelper(context);
         //try {
         db = dbHelper.getWritableDatabase();
         //} catch (SQLException e) {
@@ -139,85 +94,122 @@ public class DatabaseAdapter {
         dbHelper.close();
     }
 
-    public void insertImage(String name, String address, Double latitude, Double longitude) {
-        //ContentValues newImageValues = new ContentValues();
-        //newImageValues.put(KEY_NAME, name);
-        //newImageValues.put(KEY_ADDRESS, address);
-        //newImageValues.put(KEY_LATITUDE, latitude);
-        //newImageValues.put(KEY_LONGITUDE, longitude);
+    public void insertImage(String name, String address) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues newImageValues = new ContentValues();
+        newImageValues.put(KEY_NAME, name);
+        newImageValues.put(KEY_ADDRESS, address);
         //db.insert(DB_IMAGE_TABLE, null, newImageValues);
 
+        long insertId = db.insert(DB_IMAGE_TABLE, null, newImageValues);
+        Cursor cursor = db.query(DB_IMAGE_TABLE, columns, DatabaseAdapter.ID_COLUMN + " = " + insertId, null, null, null, null);
+        if( cursor != null && cursor.moveToFirst() ) {
+            ImageTask newImage = cursorToImage(cursor);
+            cursor.close();
+        }
 
+        System.out.println("\nDodaje "+name+" "+address);
     }
 
     public void updateImage(ImageTask task) {
-        //String name = task.getName();
-        //String address = task.getAddress();
-        //Float rating = task.getRating();
-        //Double latitude = task.getLatitude();
-        //Double longitude = task.getLongitude();
 
-        //return updateImage(name, address, rating, latitude, longitude);
+        String name = task.getName();
+        String address = task.getAddress();
+        Float rating = task.getRating();
+        Double latitude = task.getLatitude();
+        Double longitude = task.getLongitude();
+
+        updateImage(name, address, rating, latitude, longitude);
     }
 
     public void updateImage(String name, String address, Float rating, Double latitude, Double longitude) {
-        //String where = KEY_NAME + " = " + name;
-        //ContentValues updateImageValues = new ContentValues();
-        //updateImageValues.put(KEY_NAME, name);
-        //updateImageValues.put(KEY_ADDRESS, address);
-        //updateImageValues.put(KEY_RATING, rating);
-        //updateImageValues.put(KEY_LATITUDE, latitude);
-        //updateImageValues.put(KEY_LONGITUDE, longitude);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        //return db.update(DB_IMAGE_TABLE, updateImageValues, where, null) > 0;
+        String where = KEY_NAME + " = \"" + name + "\"";
+        ContentValues updateImageValues = new ContentValues();
+        updateImageValues.put(KEY_NAME, name);
+        updateImageValues.put(KEY_ADDRESS, address);
+        updateImageValues.put(KEY_RATING, rating);
+        updateImageValues.put(KEY_LATITUDE, latitude);
+        updateImageValues.put(KEY_LONGITUDE, longitude);
+
+
+        db.update(DB_IMAGE_TABLE, updateImageValues, where, null);
+        System.out.println("Zaktualizowano do postaci: "+name+" "+address+" "+rating+" "+latitude+" "+longitude);
+
 
     }
 
-    public void deleteImage(String name) {
-        //String where = KEY_NAME + " = " + name;
+    public boolean deleteImage(long id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        //return db.delete(DB_IMAGE_TABLE, where, null) > 0;
+        String where = KEY_ID + " = " + id;
+        return db.delete(DB_IMAGE_TABLE, where, null) > 0;
     }
 
-    public void getAllImages() {
-        //String[] columns = {KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
+    public Cursor getAllImages() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        //return db.query(DB_IMAGE_TABLE, columns, null, null, null, null, null);
+        return db.query(DB_IMAGE_TABLE, columns, null, null, null, null, null);
     }
 
-    public void getImageByName(String name) {
-        //String[] columns = {KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
-        //String where = KEY_NAME + " = " + name;
-        //Cursor cursor = db.query(DB_IMAGE_TABLE, columns, where, null, null, null, null);
-        //ImageTask task = null;
-        /*if (cursor != null && cursor.moveToFirst()) {
+    public ImageTask getImageByName(String name) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] columns = {KEY_ID, KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
+        String where = KEY_NAME + " = \"" + name + "\"";
+        Cursor cursor = db.query(DB_IMAGE_TABLE, columns, where, null, null, null, null);
+        ImageTask task = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            Long id = cursor.getLong(ID_COLUMN);
             String address = cursor.getString(ADDRESS_COLUMN);
             Float rating = cursor.getFloat(RATING_COLUMN);
             Double latitude = cursor.getDouble(LATITUDE_COLUMN);
             Double longitude = cursor.getDouble(LONGITUDE_COLUMN);
-            task = new ImageTask(name, address, rating, latitude, longitude);
+            task = new ImageTask(id, name, address, rating, latitude, longitude);
         }
+        cursor.close();
 
-        return task;*/
+        return task;
     }
 
-    public void getImageByAddress(String address) {
-        /*String[] columns = {KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
+    public ImageTask getImageByAddress(String address) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] columns = {KEY_ID, KEY_NAME, KEY_ADDRESS, KEY_RATING, KEY_LATITUDE, KEY_LONGITUDE};
         String where = KEY_ADDRESS + " = \"" + address + "\"";
         Cursor cursor = db.query(DB_IMAGE_TABLE, columns, where, null, null, null, null);
         ImageTask task = null;
         if (cursor != null && cursor.moveToFirst()) {
+            Long id = cursor.getLong(ID_COLUMN);
             String name = cursor.getString(NAME_COLUMN);
             Float rating = cursor.getFloat(RATING_COLUMN);
             Double latitude = cursor.getDouble(LATITUDE_COLUMN);
             Double longitude = cursor.getDouble(LONGITUDE_COLUMN);
-            task = new ImageTask(name, address, rating, latitude, longitude);
+            task = new ImageTask(id, name, address, rating, latitude, longitude);
         }
 
-        return task;*/
+        cursor.close();
+
+        return task;
     }
 
-    public static String execJSfunction(Object functionName) throws ScriptException, FileNotFoundException, NoSuchMethodException
+    private ImageTask cursorToImage(Cursor cursor) {
+        ImageTask imageTask = new ImageTask();
+        imageTask.setId(cursor.getLong(ID_COLUMN));
+        imageTask.setName(cursor.getString(NAME_COLUMN));
+        imageTask.setAddress(cursor.getString(ADDRESS_COLUMN));
+        imageTask.setRating(cursor.getFloat(RATING_COLUMN));
+        imageTask.setLatitude(cursor.getDouble(LATITUDE_COLUMN));
+        imageTask.setLongitude(cursor.getDouble(LONGITUDE_COLUMN));
+
+        cursor.close();
+
+        return imageTask;
+    }
+
+    /*public static String execJSfunction(Object functionName) throws ScriptException, FileNotFoundException, NoSuchMethodException
     {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("JavaScript");
@@ -231,5 +223,5 @@ public class DatabaseAdapter {
         Object lexer = invocableEngine.invokeMethod(marked, "lexer", "**hello**");
         Object result = invocableEngine.invokeMethod(marked, "parser", lexer);
         return result.toString();
-    }
+    }*/
 }

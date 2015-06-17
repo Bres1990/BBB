@@ -48,6 +48,7 @@ public class PhotoManipulation extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photomanipulation);
 
+        myDatabaseAdapter.open();
         intent = getIntent();
        // intent.getData()
        // photo= (Bitmap) intent.getParcelableExtra("BitmapImage");
@@ -64,8 +65,8 @@ public class PhotoManipulation extends Activity{
         Button save = (Button) findViewById(R.id.save);
         Button delete = (Button) findViewById(R.id.delete);
 
-        myDatabaseAdapter.open();
-        currentImage = myDatabaseAdapter.getImageByAddress(URI);//z jakiegos powodu zwraca nulla
+
+        currentImage = myDatabaseAdapter.getImageByName(StartScreen.name);
     }
 
 
@@ -73,6 +74,13 @@ public class PhotoManipulation extends Activity{
 
         if (view.getId() == R.id.save) {
             imagePosition = Image.LocateImage(getApplicationContext());
+            System.out.println(imagePosition.toString());
+            System.out.println(imagePosition.latitude);
+            System.out.println(imagePosition.longitude);
+
+            if (currentImage == null) {
+                System.out.println("Jestem nullem!");
+            }
             currentImage.setLatitude(imagePosition.latitude);
             currentImage.setLongitude(imagePosition.longitude);
             Toast.makeText(getApplicationContext(), imagePosition.toString(), Toast.LENGTH_LONG).show();

@@ -233,6 +233,7 @@ public class MainActivity extends Activity {
 
             itemList.remove(itemList.get(position));
             myImageAdapter.notifyDataSetChanged();
+            myDatabaseAdapter.deleteImage(myDatabaseAdapter.getImageByName(file.getName()).getId());
             return false;
         }
     };
@@ -263,7 +264,7 @@ public class MainActivity extends Activity {
             files = targetDirector.listFiles();
             for (File file : files){
                 myImageAdapter.add(file.getAbsolutePath());
-                myDatabaseAdapter.insertImage(file.getName(), file.getAbsolutePath(), null, null);
+                myDatabaseAdapter.insertImage(file.getName(), file.getAbsolutePath());
             }
         }
         catch (NullPointerException e) {

@@ -50,6 +50,8 @@
 	    <activity android:name=".imageDisplay" android:theme="@android:style/Theme.WithActionBar"/>
         <activity android:name=".PhotoManipulation"/>
 
+
+
         <!--  Google Maps Service-->
         <meta-data
                 android:name="com.google.android.gms.version"
@@ -78,4 +80,5 @@
     <!-- Required to show current location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 </manifest>

@@ -6,18 +6,32 @@ import android.content.ContentValues;
  * Created by Adam on 2015-05-26.
  */
 public class ImageTask {
+    private long id;
     private String name;
     private String address;
     private Float rating;
     private Double latitude;
     private Double longitude;
 
-    public ImageTask(String name, String address, Float rating, Double latitude, Double longitude) {
+    public ImageTask(long id, String name, String address, Float rating, Double latitude, Double longitude) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.rating = rating;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public ImageTask() {
+
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

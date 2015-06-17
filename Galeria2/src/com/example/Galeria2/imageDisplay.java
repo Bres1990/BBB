@@ -136,8 +136,8 @@ public class imageDisplay extends Activity implements ActionBar.OnNavigationList
                 ratingDialog.setCancelable(true);
                 ratingBar = (RatingBar)ratingDialog.findViewById(R.id.dialog_ratingbar);
 
-                if (userRankValue != null) {
-                    ratingBar.setRating(userRankValue);
+                if (currentImage.getRating() > 0.0) {
+                    ratingBar.setRating(currentImage.getRating());
                 }
 
                 TextView text = (TextView)ratingDialog.findViewById(R.id.rank_dialog_text1);
@@ -177,10 +177,15 @@ public class imageDisplay extends Activity implements ActionBar.OnNavigationList
                     fragmentTransaction.commit();
                     mMapFragment.getMapAsync(this);
                     googleMap = mMapFragment.getMap();
+
+
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Impossible!", Toast.LENGTH_LONG).show();
                 }
+
+                mapDialog.show();
+
 
                 return true;
         }
@@ -194,8 +199,7 @@ public class imageDisplay extends Activity implements ActionBar.OnNavigationList
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(imageLocation, 13));
 
         googleMap.addMarker(new MarkerOptions()
-                .title("Wroclaw")
-                        //.snippet("The coolest city in Wroclaw.")
+                .title(currentImage.getName())
                 .position(imageLocation));
     }
 
